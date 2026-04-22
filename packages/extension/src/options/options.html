@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><title>Marketplace Evaluator — Settings</title>
+  <style>
+    body{font-family:-apple-system,'Segoe UI',system-ui,sans-serif;background:#0d0f18;color:#dde2f0;padding:32px;max-width:480px}
+    h1{font-size:18px;font-weight:700;margin-bottom:4px} h1 em{color:#5c6ef0;font-style:normal}
+    p{font-size:13px;color:#7a85aa;margin-bottom:24px}
+    label{display:block;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:#7a85aa;margin-bottom:5px}
+    input{width:100%;background:#252a40;border:1px solid #2a3050;border-radius:5px;color:#dde2f0;padding:8px 10px;font-size:13px;outline:none;margin-bottom:16px;font-family:inherit}
+    input:focus{border-color:#5c6ef0}
+    button{background:#5c6ef0;color:#fff;border:none;border-radius:5px;padding:9px 20px;font-size:13px;font-weight:600;cursor:pointer}
+    button:hover{background:#4a5ce0}
+    #status{font-size:13px;margin-top:12px} .ok{color:#22c55e} .err{color:#ef4444}
+  </style>
+</head>
+<body>
+  <h1>Marketplace <em>Evaluator</em></h1>
+  <p>Configure your connection to the evaluator server.</p>
+  <label>Server URL</label>
+  <input id="serverUrl" type="url" placeholder="https://eval.yourdomain.com" />
+  <label>API Key</label>
+  <input id="apiKey" type="password" placeholder="Your API key" />
+  <button id="save">Save &amp; Verify</button>
+  <div id="status"></div>
+  <script src="options.js"></script>
+</body>
+</html>

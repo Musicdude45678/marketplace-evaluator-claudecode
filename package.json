@@ -1,0 +1,12 @@
+{
+  "name": "marketplace-evaluator",
+  "private": true,
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "dev:backend": "npm run dev --workspace=packages/backend",
+    "dev:frontend": "npm run dev --workspace=packages/frontend",
+    "dev:extension": "npm run dev --workspace=packages/extension"
+  },
+  "engines": { "node": ">=20" }
+}

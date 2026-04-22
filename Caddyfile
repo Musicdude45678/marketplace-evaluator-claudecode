@@ -1,0 +1,5 @@
+# Replace YOURDOMAIN once DNS is configured e.g. eval.yourdomain.com
+YOURDOMAIN {
+    reverse_proxy app:3000
+    encode gzip
+}

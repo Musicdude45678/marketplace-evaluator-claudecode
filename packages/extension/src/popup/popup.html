@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" /><title>Marketplace Evaluator</title>
+  <style>
+    body{font-family:-apple-system,'Segoe UI',system-ui,sans-serif;background:#0d0f18;color:#dde2f0;width:260px;padding:16px}
+    h1{font-size:15px;font-weight:700;margin-bottom:3px} h1 em{color:#5c6ef0;font-style:normal}
+    p{font-size:12px;color:#7a85aa}
+    .btn{display:block;width:100%;background:#5c6ef0;color:#fff;border:none;border-radius:5px;padding:9px;font-size:13px;font-weight:600;cursor:pointer;margin-top:14px;font-family:inherit}
+    .btn:hover{background:#4a5ce0} .btn:disabled{opacity:.45;cursor:not-allowed}
+    .btn-ghost{background:transparent;border:1px solid #2a3050;color:#7a85aa}.btn-ghost:hover{background:#1e2235;color:#dde2f0}
+    #msg{font-size:12px;margin-top:10px;text-align:center} .ok{color:#22c55e} .err{color:#ef4444}
+  </style>
+</head>
+<body>
+  <h1>Marketplace <em>Evaluator</em></h1>
+  <p id="desc">Navigate to a Facebook Marketplace listing to add it.</p>
+  <button class="btn" id="addBtn" disabled>＋ Add This Listing</button>
+  <button class="btn btn-ghost" id="openApp">↗ Open Evaluator</button>
+  <button class="btn btn-ghost" id="openOptions">⚙ Settings</button>
+  <div id="msg"></div>
+  <script src="popup.js"></script>
+</body>
+</html>
