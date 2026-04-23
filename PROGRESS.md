@@ -3,9 +3,9 @@
 ## What's done
 
 ### Infrastructure
-- Ubuntu 24.04 server at **172.0.0.123** — Docker 29.4, Compose v5.1, Portainer CE running on port 9443
+- Ubuntu 24.04 server at **129.232.154.110** — Docker 29.4, Compose v5.1, Portainer CE running on port 9443
 - UFW open on 22, 80, 443, 9443
-- Portainer: https://172.0.0.123:9443 (set admin password on first visit)
+- Portainer: https://129.232.154.110:9443 (set admin password on first visit)
 - SSH key saved at `~/.ssh/claude-session-key` (armandt user, passwordless sudo configured)
 
 ### Codebase (this repo)
@@ -34,7 +34,7 @@ All source files written. Monorepo with npm workspaces:
    ```
 3. **Create `.env` on server:**
    ```bash
-   ssh -i ~/.ssh/claude-session-key armandt@172.0.0.123
+   ssh -i ~/.ssh/claude-session-key armandt@129.232.154.110
    cd ~/marketplace-evaluator  # after git clone (see step 5)
    cp .env.example .env
    # Edit .env — set strong DB_PASSWORD and ADMIN_KEY
@@ -43,7 +43,7 @@ All source files written. Monorepo with npm workspaces:
 4. **Update `Caddyfile`** — replace `YOURDOMAIN` with actual subdomain once DNS is ready
 5. **Clone repo on server and deploy:**
    ```bash
-   ssh -i ~/.ssh/claude-session-key armandt@172.0.0.123
+   ssh -i ~/.ssh/claude-session-key armandt@129.232.154.110
    git clone https://github.com/AJ-dev-i60/Marketplace-Evaluator.git ~/marketplace-evaluator
    cd ~/marketplace-evaluator
    cp .env.example .env && nano .env
@@ -61,7 +61,7 @@ All source files written. Monorepo with npm workspaces:
      -d '{"name": "Armandt"}'
    # Response contains your apiKey — save it
    ```
-8. **Wire Cloudflare DNS** — create A record for subdomain pointing to 172.0.0.123, set SSL to Full (strict)
+8. **Wire Cloudflare DNS** — create A record for subdomain pointing to 129.232.154.110, set SSL to Full (strict)
    - Cloudflare Zone ID: 751adde5f1041fb0957fd402f78bab9f
    - API token available (stored in session)
 
@@ -80,7 +80,7 @@ All source files written. Monorepo with npm workspaces:
 12. **Publish to Chrome Web Store (Unlisted)** when ready to share with friends ($5 one-time dev fee)
 
 ## Credentials summary (for Claude to resume)
-- Server: 172.0.0.123, user: armandt, key: ~/.ssh/claude-session-key
+- Server: 129.232.154.110, user: armandt, key: ~/.ssh/claude-session-key
 - GitHub: https://github.com/AJ-dev-i60/Marketplace-Evaluator.git
 - Cloudflare Zone ID: 751adde5f1041fb0957fd402f78bab9f
 - GitHub PAT and Cloudflare API token available in session context
