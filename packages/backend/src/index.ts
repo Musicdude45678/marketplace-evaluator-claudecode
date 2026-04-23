@@ -16,9 +16,7 @@ await app.register(categoryRoutes, { prefix: '/api/categories' })
 await app.register(listingRoutes,  { prefix: '/api/listings' })
 await app.register(adminRoutes,    { prefix: '/api/admin' })
 
-const frontendDist = process.env.FRONTEND_DIST
-  ? join(process.cwd(), process.env.FRONTEND_DIST)
-  : join(__dirname, '../../frontend/dist')
+const frontendDist = process.env.FRONTEND_DIST ?? join(__dirname, '../../frontend/dist')
 
 await app.register(staticFiles, { root: frontendDist, prefix: '/' })
 app.setNotFoundHandler((_req, reply) => { reply.sendFile('index.html') })
