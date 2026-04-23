@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>API Key Manager</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f0f0f; color: #f0f0f0; min-height: 100vh; padding: 40px 24px; }
+  h1 { font-size: 2rem; font-weight: 700; margin-bottom: 32px; color: #fff; }
+  .gate { max-width: 480px; margin: 20vh auto 0; text-align: center; }
+  .gate h1 { font-size: 1.6rem; margin-bottom: 8px; }
+  .gate p { color: #888; margin-bottom: 24px; }
+  input { width: 100%; padding: 14px 16px; font-size: 1rem; border: 1px solid #333; border-radius: 10px; background: #1a1a1a; color: #f0f0f0; outline: none; transition: border-color 0.15s; }
+  input:focus { border-color: #555; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; font-size: 0.95rem; font-weight: 600; border: none; border-radius: 10px; cursor: pointer; transition: opacity 0.15s; }
+  .btn:hover { opacity: 0.85; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-primary { background: #2563eb; color: #fff; }
+  .btn-danger  { background: #dc2626; color: #fff; }
+  .btn-warning { background: #d97706; color: #fff; }
+  .btn-success { background: #16a34a; color: #fff; }
+  .btn-ghost   { background: #2a2a2a; color: #ccc; }
+  .gate .btn { width: 100%; justify-content: center; margin-top: 12px; padding: 14px; font-size: 1rem; }
+  .main { max-width: 800px; margin: 0 auto; }
+  .toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 32px; flex-wrap: wrap; }
+  .toolbar input { flex: 1; min-width: 200px; }
+  .card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 14px; padding: 22px 24px; margin-bottom: 14px; display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  .card.paused { opacity: 0.55; border-color: #3a2a00; }
+  .info { flex: 1; min-width: 0; }
+  .name { font-size: 1.25rem; font-weight: 700; margin-bottom: 4px; }
+  .key { font-family: monospace; font-size: 0.85rem; color: #888; word-break: break-all; }
+  .badge { display: inline-block; padding: 2px 10px; border-radius: 99px; font-size: 0.75rem; font-weight: 700; margin-left: 10px; }
+  .badge-on  { background: #14532d; color: #4ade80; }
+  .badge-off { background: #451a03; color: #fb923c; }
+  .actions { display: flex; gap: 8px; flex-shrink: 0; }
+  .empty { text-align: center; color: #555; padding: 60px 0; font-size: 1.1rem; }
+  .error { color: #f87171; font-size: 0.9rem; margin-top: 8px; }
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div id="gate" class="gate">
+  <h1>API Key Manager</h1>
+  <p>Enter your admin key to continue</p>
+  <input id="keyInput" type="password" placeholder="Admin key" autofocus>
+  <div id="gateError" class="error hidden"></div>
+  <button class="btn btn-primary" onclick="unlock()">Unlock</button>
+</div>
+
+<div id="app" class="main hidden">
+  <h1>API Key Manager</h1>
+  <div class="toolbar">
+    <input id="newName" type="text" placeholder="New user name…" onkeydown="if(event.key==='Enter')createUser()">
+    <button class="btn btn-primary" onclick="createUser()">+ Create user</button>
+    <button class="btn btn-ghost" onclick="logout()" style="margin-left:auto">Lock</button>
+  </div>
+  <div id="createError" class="error hidden"></div>
+  <div id="list"></div>
+</div>
+
+<script>
+let adminKey = ''
+
+function unlock() {
+  const val = document.getElementById('keyInput').value.trim()
+  if (!val) return
+  adminKey = val
+  fetch('/api/admin/users', { headers: { 'x-admin-key': adminKey } })
+    .then(r => {
+      if (!r.ok) throw new Error('Invalid admin key')
+      return r.json()
+    })
+    .then(users => {
+      localStorage.setItem('adminKey', adminKey)
+      document.getElementById('gate').classList.add('hidden')
+      document.getElementById('app').classList.remove('hidden')
+      render(users)
+    })
+    .catch(() => {
+      adminKey = ''
+      const el = document.getElementById('gateError')
+      el.textContent = 'Invalid admin key'
+      el.classList.remove('hidden')
+    })
+}
+
+function logout() {
+  adminKey = ''
+  localStorage.removeItem('adminKey')
+  document.getElementById('app').classList.add('hidden')
+  document.getElementById('gate').classList.remove('hidden')
+  document.getElementById('keyInput').value = ''
+}
+
+function loadUsers() {
+  return fetch('/api/admin/users', { headers: { 'x-admin-key': adminKey } }).then(r => r.json())
+}
+
+function render(users) {
+  const list = document.getElementById('list')
+  if (!users.length) {
+    list.innerHTML = '<div class="empty">No users yet — create one above</div>'
+    return
+  }
+  list.innerHTML = users.map(u => `
+    <div class="card ${u.active ? '' : 'paused'}" id="card-${u.id}">
+      <div class="info">
+        <div class="name">${esc(u.name)}<span class="badge ${u.active ? 'badge-on' : 'badge-off'}">${u.active ? 'Active' : 'Paused'}</span></div>
+        <div class="key">${esc(u.apiKey)}</div>
+      </div>
+      <div class="actions">
+        <button class="btn ${u.active ? 'btn-warning' : 'btn-success'}" onclick="toggleActive('${u.id}', ${!u.active})">
+          ${u.active ? 'Pause' : 'Resume'}
+        </button>
+        <button class="btn btn-danger" onclick="deleteUser('${u.id}', '${esc(u.name)}')">Delete</button>
+      </div>
+    </div>
+  `).join('')
+}
+
+function createUser() {
+  const nameEl = document.getElementById('newName')
+  const name = nameEl.value.trim()
+  const errEl = document.getElementById('createError')
+  if (!name) { errEl.textContent = 'Enter a name'; errEl.classList.remove('hidden'); return }
+  errEl.classList.add('hidden')
+  fetch('/api/admin/users', {
+    method: 'POST',
+    headers: { 'x-admin-key': adminKey, 'content-type': 'application/json' },
+    body: JSON.stringify({ name })
+  }).then(r => r.json()).then(() => {
+    nameEl.value = ''
+    loadUsers().then(render)
+  })
+}
+
+function toggleActive(id, active) {
+  fetch(`/api/admin/users/${id}/active`, {
+    method: 'PATCH',
+    headers: { 'x-admin-key': adminKey, 'content-type': 'application/json' },
+    body: JSON.stringify({ active })
+  }).then(() => loadUsers().then(render))
+}
+
+function deleteUser(id, name) {
+  if (!confirm(`Delete "${name}"? This cannot be undone.`)) return
+  fetch(`/api/admin/users/${id}`, {
+    method: 'DELETE',
+    headers: { 'x-admin-key': adminKey }
+  }).then(() => loadUsers().then(render))
+}
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+}
+
+// Auto-unlock if key stored
+const saved = localStorage.getItem('adminKey')
+if (saved) {
+  document.getElementById('keyInput').value = saved
+  unlock()
+}
+
+document.getElementById('keyInput').addEventListener('keydown', e => { if (e.key === 'Enter') unlock() })
+</script>
+</body>
+</html>

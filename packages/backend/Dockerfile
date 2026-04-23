@@ -27,6 +27,7 @@ COPY --from=build-backend /app/node_modules ./node_modules
 COPY --from=build-backend /app/packages/shared/dist ./packages/shared/dist
 COPY --from=build-backend /app/packages/backend/dist ./packages/backend/dist
 COPY --from=build-backend /app/packages/backend/drizzle ./packages/backend/drizzle
+COPY packages/backend/src/admin.html ./packages/backend/dist/admin.html
 COPY --from=build-frontend /app/packages/frontend/dist ./packages/frontend/dist
 
 WORKDIR /app/packages/backend

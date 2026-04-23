@@ -4,17 +4,22 @@ import cors from '@fastify/cors'
 import staticFiles from '@fastify/static'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
+import { readFileSync } from 'fs'
 import { categoryRoutes } from './routes/categories.js'
 import { listingRoutes } from './routes/listings.js'
 import { adminRoutes } from './routes/admin.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
+const adminHtml = readFileSync(join(__dirname, 'admin.html'), 'utf-8')
+
 const app = Fastify({ logger: true })
 
 await app.register(cors, { origin: true })
 await app.register(categoryRoutes, { prefix: '/api/categories' })
 await app.register(listingRoutes,  { prefix: '/api/listings' })
 await app.register(adminRoutes,    { prefix: '/api/admin' })
+
+app.get('/admin-ui', (_req, reply) => reply.type('text/html').send(adminHtml))
 
 const frontendDist = process.env.FRONTEND_DIST ?? join(__dirname, '../../frontend/dist')
 

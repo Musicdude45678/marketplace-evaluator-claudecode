@@ -1,9 +1,10 @@
-import { pgTable, text, integer, real, timestamp, uuid } from 'drizzle-orm/pg-core'
+import { pgTable, text, integer, real, timestamp, uuid, boolean as pgBoolean } from 'drizzle-orm/pg-core'
 
 export const users = pgTable('users', {
   id: uuid('id').primaryKey().defaultRandom(),
   name: text('name').notNull(),
   apiKey: text('api_key').notNull().unique(),
+  active: pgBoolean('active').notNull().default(true),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 })
 

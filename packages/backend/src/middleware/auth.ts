@@ -15,8 +15,7 @@ export async function authMiddleware(req: FastifyRequest, reply: FastifyReply) {
     return reply.code(401).send({ error: 'Missing API key' })
   }
   const [user] = await db.select().from(users).where(eq(users.apiKey, apiKey)).limit(1)
-  if (!user) {
-    return reply.code(401).send({ error: 'Invalid API key' })
-  }
+  if (!user) return reply.code(401).send({ error: 'Invalid API key' })
+  if (!user.active) return reply.code(403).send({ error: 'API key paused' })
   req.userId = user.id
 }
